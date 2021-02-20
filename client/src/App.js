@@ -1,8 +1,9 @@
 import React from 'react'
 import LoginPage from './components/LoginPage'
 import RegisterPage from './components/RegisterPage'
-import RoomPage from './components/RoomPage'
+import RoomCreatePage from './components/RoomCreatePage'
 import HomePage from './components/HomePage'
+import GamePlayPage from './components/GamePlayPage'
 import {
     BrowserRouter as Router,
     Switch,
@@ -19,7 +20,8 @@ class App extends React.Component{
                 <Route exact path="/login" component={LoginPage}/>
                 <Route exact path="/register" component={RegisterPage}/>
                 <Route exact path="/" component={HomePage}/>
-                <Route exact path="/room" component={RoomPage}/>
+                <Route exact path="/roomcreate" component={RoomCreatePage}/>
+                <Route exact path="/gameplay" component={GamePlayPage}/>
                 </Switch>
             </div>
             </Router>
