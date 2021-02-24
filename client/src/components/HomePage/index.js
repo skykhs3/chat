@@ -3,19 +3,39 @@ import Button from '@material-ui/core/Button';
 import axios from 'axios';
 class HomePage extends React.Component{
 
+
     renderRoomList=()=>{
 
     }
     constructor(props){
         super(props);
+        axios.get('/api/users/auth').then(res=>{
+            console.log(res.data)
+            if(res.data.isAuth===false){
+                this.props.history.push('/login')
+            }
+            else{
+
+            }
+        })
         console.log("TEST");
-        axios.get('/axiostest').then(res=>console.log(res.data));
+      //  axios.get('/api/axiostest').then(res=>console.log(res.data));
+    }
+    logoutOnClickHanlder=(e)=>{
+        axios.get('/api/users/logout').then(res=>{
+            if (res.data.success) {
+                this.props.history.push("/login")
+              }
+              else {
+                alert("로그아웃 실패")
+              }
+        })
     }
     render(){
         return(<div>
             <div >
             <div className="navigationBar">SPARCS Newbie Project</div>
-            <Button className="navigationBar">Log out</Button>
+            <Button className="navigationBar" onClick={this.logoutOnClickHanlder}>Log out</Button>
             </div>
             
             

@@ -30,7 +30,6 @@ const userSchema = mongoose.Schema({
     
 })
 userSchema.methods.comparePassword = function(plainPassword,cb){
-    console.log(plainPassword)
     if(plainPassword!== this.password){
         return cb(null,false)
     }

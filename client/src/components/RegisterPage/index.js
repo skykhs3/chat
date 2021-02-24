@@ -1,14 +1,30 @@
 import React from 'react'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
 class RegisterPage extends React.Component{
 
+  constructor(props){
+    super(props)
+    axios.get('/api/users/auth').then(res=>{
+      console.log(res.data)
+      if(res.data.isAuth!==false){
+          this.props.history.push('/')
+      }
+      else{
+
+      }
+  })
+  }
+    loginOnClickHanlder=(e)=>{
+      this.props.history.push('/login')
+    }
     render(){
         return(<div>
             
             <div >
             <div className="navigationBar">SPARCS Newbie Project</div>
-            <Button className="navigationBar">Login</Button>
+            <Button className="navigationBar" onClick={this.loginOnClickHanlder}>Login</Button>
             <Button className="navigationBar">Register</Button>
             </div>
 
@@ -57,8 +73,6 @@ class RegisterPage extends React.Component{
               id="email"
               name="email"
               label="Nick name"
-              autoComplete="email"
-              autoFocus
             //  onChange={onEmailHandler}
             />
              <Button
