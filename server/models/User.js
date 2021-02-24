@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const jwt =require('jsonwebtoken')
 
 const userSchema = mongoose.Schema({
-    nickName :{
+    nickname :{
         type : String,
         maxlength: 50,
     },
@@ -22,8 +23,43 @@ const userSchema = mongoose.Schema({
         2 : 방 만드는중
         3 : 게임 대기중 + 게임 하는중
         */
+    },
+    token:{
+        type:String
     }
+    
 })
-const User = mongoose.model('User',userSchema)
+userSchema.methods.comparePassword = function(plainPassword,cb){
+    console.log(plainPassword)
+    if(plainPassword!== this.password){
+        return cb(null,false)
+    }
+    return cb(null,true)
+}
+userSchema.methods.generateToken = function(cb){
+    var user=this;
 
+    //jsonwebtoken을 이용해서 token을 생성하기
+    var token=jwt.sign(user._id.toHexString(),'secretToken')
+    user.token = token
+    user.save(function(err,user){
+        if(err) return cb(err)
+        cb(null,user)
+
+    })
+
+}
+userSchema.statics.findByToken = function(token,cb){
+    var user=this;
+    jwt.verify(token,'secretToken',function(err,decoded){
+        user.findOne({
+            "_id":decoded,"token":token
+        },function(err,user){
+            if(err) return cb(err);
+            cb(null,user)
+        })
+    })
+}
+
+const User = mongoose.model('User',userSchema)
 module.exports={User}

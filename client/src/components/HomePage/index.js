@@ -1,15 +1,21 @@
 import React from 'react'
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
 class HomePage extends React.Component{
 
     renderRoomList=()=>{
 
     }
+    constructor(props){
+        super(props);
+        console.log("TEST");
+        axios.get('/axiostest').then(res=>console.log(res.data));
+    }
     render(){
         return(<div>
             <div >
             <div className="navigationBar">SPARCS Newbie Project</div>
-            <div className="navigationBar">Log out</div>
+            <Button className="navigationBar">Log out</Button>
             </div>
             
             

@@ -2,18 +2,19 @@ import React from 'react'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 class RegisterPage extends React.Component{
+
     render(){
         return(<div>
             
             <div >
             <div className="navigationBar">SPARCS Newbie Project</div>
-            <div className="navigationBar">Login</div>
-            <div className="navigationBar">Register</div>
+            <Button className="navigationBar">Login</Button>
+            <Button className="navigationBar">Register</Button>
             </div>
 
             <form className="form">
             <TextField
-            type="email"
+              type="email"
               variant="outlined"
               margin="normal"
               required
