@@ -89,6 +89,7 @@ class LoginPage extends React.Component {
         <TextField
           type="email"
           helperText={this.state.emailHelperText}
+          error={this.state.emailHelperText===""?false:true}
           variant="outlined"
           margin="normal"
           required
@@ -104,6 +105,7 @@ class LoginPage extends React.Component {
           type="password"
           variant="outlined"
           margin="normal"
+          error={this.state.passwordHelperText===""?false:true}
           helperText={this.state.passwordHelperText}
           required
           fullWidth

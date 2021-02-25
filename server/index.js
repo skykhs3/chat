@@ -18,7 +18,25 @@ mongoose.connect(mongoURI, {
   }).then(() => console.log('몽고디비 연결 완료')).catch(err => console.log(err))
   
 app.get('/', (req,res) => res.send('Hello World!'))
+app.post('/api/users/findByID',(req,res)=>{
+  User.findById(req.body._id,(err, user) => {
+  
+    if (!user) {
+      return res.json({
+        success:false,
+        ...user._doc})
+    }
+    else{
+      return res.json({
+        success:true,
+        ...user._doc
+      })
+    }
+  })
+
+})
 app.post('/api/users/register', (req,res)=>{
+  //Todo 중복 이메일 걸러내야함.
   const user = new User(req.body)
   user.save((err,userInfo)=>{
     if(err) return res.json({success:false,err})
@@ -70,6 +88,8 @@ app.get('/api/users/logout', auth, (req, res) => {
 app.get('/api/axiostest',(req,res)=>{
   res.send("axiostest 중입니다.")
 })
-
+app.post('/api/users/createRoom',(req,res)=>{
+  console.log(req.body);
+})
 
 app.listen(port,()=> console.log(`Example app listening on port ${port}!`))
