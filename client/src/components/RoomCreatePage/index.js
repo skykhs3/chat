@@ -37,9 +37,13 @@ class RoomCreatePage extends React.Component{
   roomTitleOnChange=(event)=>{
     this.setState({ roomTitle: event.currentTarget.value });
   }
+  exitOnClickHandler=(event)=>{
+    this.props.history.push('/')
+  }
     render(){
          return (<div>
 
+<Button onClick={this.exitOnClickHandler}>나가기</Button>
             <form className="form" onSubmit={this.onSubmitHandler}>
             <TextField 
             variant="outlined"

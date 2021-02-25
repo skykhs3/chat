@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { User } = require('./models/User')
+const { Room } =require('./models/Room')
 const {auth} = require('./middleware/auth')
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
@@ -90,6 +91,20 @@ app.get('/api/axiostest',(req,res)=>{
 })
 app.post('/api/users/createRoom',(req,res)=>{
   console.log(req.body);
+  const room = new Room(req.body)
+  room.save((err,roomInfo)=>{
+    if(err) return res.json({success:false,err})
+    return res.status(200).json({
+      success: true
+    })
+  })
 })
+app.get('/api/rooms/loadlist',(req,res)=>{
+  Room.find({},(err,docs)=>{
+    return res.json({
+      docs:docs,
+    })
+  })
+});
 
 app.listen(port,()=> console.log(`Example app listening on port ${port}!`))

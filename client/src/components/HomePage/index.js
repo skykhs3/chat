@@ -1,16 +1,15 @@
 import React from 'react'
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import './HomePage.css';
 class HomePage extends React.Component{
-
-
-    renderRoomList=()=>{
-
-    }
     constructor(props){
         super(props);
+        this.state={
+            roomList:[],
+        }
         axios.get('/api/users/auth').then(res=>{
-            console.log(res.data)
+          //  console.log(res.data)
             if(res.data.isAuth===false){
                 this.props.history.push('/login')
             }
@@ -20,6 +19,12 @@ class HomePage extends React.Component{
         })
         console.log("TEST");
       //  axios.get('/api/axiostest').then(res=>console.log(res.data));
+    }
+    componentDidMount(){
+        axios.get('/api/rooms/loadlist').then(res=>{
+            this.setState({roomList:res.data.docs})
+            
+        })
     }
     logoutOnClickHanlder=(e)=>{
         axios.get('/api/users/logout').then(res=>{
@@ -31,6 +36,9 @@ class HomePage extends React.Component{
               }
         })
     }
+    createRoomOnClickHandler=(event)=>{
+        this.props.history.push("/roomcreate")
+    }
     render(){
         return(<div>
             <div >
@@ -39,22 +47,11 @@ class HomePage extends React.Component{
             </div>
             
             
-            <Button>
+            <Button onClick={this.createRoomOnClickHandler}>
                 새로운 방 만들기
             </Button>
 
-            {this.renderRoomList()}
-
-            <div > 김현수</div>
-                <div> 같이 밥 먹을 사람 구해요~</div>
-            {/* <Button>
-                <div > 김현수</div>
-                <div> 같이 밥 먹을 사람 구해요~</div>
-                <div> 심심해요</div>
-            </Button> */}
-            
-            
-            
+        {this.state.roomList.map(item=>(<div className="roomCell"><Button key={item.id} className="roomCell">{item.roomTitle}&nbsp;<span> ( 1 / 2 )</span></Button></div>))}
             </div>);
     }
 
