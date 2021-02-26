@@ -22,6 +22,21 @@ const roomSchema = mongoose.Schema({
         type:String,
         default:"",
     },
+    whoseTurn:{
+        type:Number,
+        default:1,
+    },
+    isStart:{
+        type:Boolean,
+        default:false,
+    },
+    isReady:{
+        type:Boolean,
+        default:false,
+    },
+    timeLimit:{
+        type:Date,
+    }
 })
 const Room=mongoose.model('Room',roomSchema);
 module.exports={Room}

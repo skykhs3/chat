@@ -10,6 +10,8 @@ const { auth } = require('./middleware/auth')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
+var timeLimitMap=new Map()
+var testArray=[];
 
 //사실 감춰야하는 사항
 const mongoURI = "mongodb+srv://hyeonsu:abcd1234@cluster0.tfva0.mongodb.net/Cluster0?retryWrites=true&w=majority"
@@ -86,8 +88,14 @@ app.get('/api/users/logout', auth, (req, res) => {
     })
   })
 })
+var num=0;
 app.get('/api/axiostest', (req, res) => {
-  res.send("axiostest 중입니다.")
+
+  console.log(`start ${++num}`)
+  const tt=num;
+  setTimeout(()=>{console.log(`end ${tt}`)
+res.json({});
+},5000);
 })
 app.post('/api/users/createRoom', (req, res) => {
   const room = new Room(req.body)
@@ -110,7 +118,7 @@ app.post('/api/users/createRoom', (req, res) => {
   })
 })
 app.post('/api/users/changeOnlineState', (req, res) => {
-  console.log(`_id ${req.body._id}`)
+  //console.log(`_id ${req.body._id}`)
   User.findByIdAndUpdate(
     req.body._id
     , { onlineState: req.body.onlineState, joinedRoomID: req.body.joinedRoomID }, (err, user) => {
@@ -122,6 +130,7 @@ app.post('/api/users/changeOnlineState', (req, res) => {
       })
     })
 })
+
 // app.get('/api/users/auth',auth,(req,res)=>{
 //   res.status(200).json({
 //     _id:req.user.id,
@@ -134,6 +143,48 @@ app.post('/api/users/changeOnlineState', (req, res) => {
 // })
 
 ///만료된 방인가?
+app.post('/api/rooms/startgame',(req,res)=>{
+  ///_id : roomID
+  Room.findById(req.body._id,async(err,room)=>{
+    if(err) return res.json({success:false,message:"err"})
+    if(room.isDeleted===true) return res.json({success:false,message:"room deleted"})
+    if(room.isReady===false) return res.json({success:false,message:"not ready"})
+
+    //must undo
+    // if(room.isStart===true) return res.json({success:false,message:"already start"})
+
+    if(room.participantID==="") return res.json({success:false,message:"no participant"})
+    room.isStart=true;
+    room.whoseTurn=1;
+    //Todo 서버의 타임에 맞게 수정.
+   // room.timeLimit=new Date()
+  //  room.timeLimit=new Date((new Date().getTime())+60000+(9*60*60*1000));
+  room.timeLimit=new Date(new Date().getTime()+60000);
+    await room.save((err,updatedRoom)=>{
+      if(err) return res.json({success:false,message:"err"})
+      console.log(room._doc._id)
+      console.log(updatedRoom);
+      timeLimitMap.set(room._doc._id,updatedRoom.timeLimit);
+      testArray.push(updatedRoom.timeLimit)
+    })
+    res.json({success:true});
+    
+  })
+})
+///자기 턴이 지났는지 안지났는지 확인
+playAlert = setInterval(function() {
+  timeLimitMap.forEach((value, key, map)=>{
+    console.log(value);
+    console.log(key);
+    if(value.getTime()<new Date().getTime()){
+      console.log(`시간 지남 ${key}`);
+    }
+  })
+}, 500);
+
+//돌을 놓았을 때, 위치, 차례 등등-> 겜 끝났는지 판단.
+//app.post('/api/users/do')
+
 app.post('/api/rooms/auth', (req, res) => {
   Room.findById(req.body._id, (err, roomInfo) => {
     if (err) return res.json({ isAuth: false, ...roomInfo._doc })
@@ -146,11 +197,14 @@ app.post('/api/rooms/auth', (req, res) => {
   })
 })
 app.get('/api/rooms/loadList', (req, res) => {
-  Room.find({}, (err, docs) => {
+  Room.find({}, async(err, docs) => {
+    if(err) return res.json({success:false})
     return res.json({
+      success:true,
       docs: docs,
     })
   })
+  console.log("end1")
 });
 app.post('/api/rooms/joinRoom', (req, res) => {
   Room.findById(req.body._id, (err, room) => {
@@ -164,13 +218,14 @@ app.post('/api/rooms/joinRoom', (req, res) => {
     else {
       //Todo 터치 못하게 막는 화면 필
       if (room._doc.isDeleted === false && room._doc.participantID === "" && room._doc.adminID !== req.body.userInfo._id) {
-
-        Room.findByIdAndUpdate(req.body._id,
-          { participantID: req.body.userInfo._id, participantNickname: req.body.userInfo.nickname }, (err, room) => {
-            return res.json({
-              success: true,
-            })
-          })
+        room.participantID=req.body.userInfo._id;
+        room.participandNickname=req.body.userInfo.nickname;
+        room.save(err,updatedRoom=>{
+          if(err){
+            return res.json({success:false});
+          }
+          return res.json({success:true})
+        } )
       }
       else {
         return res.json({

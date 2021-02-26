@@ -57,6 +57,7 @@ class GamePlayPage extends React.Component {
         if(this.state.isAdmin===true && this.state.otherID===""){
             return (<div>상대를 기다리는 중입니다...</div>);
         }
+        //Todo 게임 준비버튼을 눌러주세요, 게임 시작버튼을 눌러주세요.
         else if(this.state.otherID!==""){
             return (<div>{this.state.myNickname} VS {this.state.otherNickname} </div>);
         }
@@ -67,14 +68,17 @@ class GamePlayPage extends React.Component {
     exitOnClickHanlder=(event)=>{
         
     }
+    gameStartOnClickHandler=(event)=>{
+
+    }
     render() {
         console.log(this.state)
         return (<div>
             
-            <div><Button onClick={this.exitOnClickHanlder}>게임 나가기</Button></div>
+        <div><Button onClick={this.exitOnClickHanlder}>게임 나가기</Button><Button onClick={this.gameStartOnClickHandelr}>{this.state.isAdmin?"게임 시작하기":"게임 준비하기"}</Button></div>
             <div>방 제목 : {this.state.roomTitle}</div>
-            <div>방장 : {this.state.isAdmin?this.state.myNickname:this.state.otherNickname}</div>
-            <div>참가자 : {this.state.isAdmin?this.state.otherNickname:this.state.myNickname}</div>
+            <div>방장 : {this.state.isAdmin?this.state.myNickname:this.state.otherNickname} ( 준비완료 )</div>
+        <div>참가자 : {this.state.isAdmin?this.state.otherNickname:this.state.myNickname} {this.state.isReady?"( 준비 완료 )":"( 대기중 )"}</div>
             {this.test()}
             
             <div className="game_board">

@@ -5,6 +5,7 @@ import RoomCreatePage from './components/RoomCreatePage'
 import HomePage from './components/HomePage'
 import GamePlayPage from './components/GamePlayPage'
 import ExpiredPage from './components/ExpiredPage'
+import ExaminingPage from './components/ExaminingPage'
 import {
     BrowserRouter as Router,
     Switch,
@@ -24,6 +25,7 @@ class App extends React.Component{
                 <Route exact path="/roomcreate" component={RoomCreatePage}/>
                 <Route exact path="/gameplay" component={GamePlayPage}/>
                 <Route exact path="/expired" component={ExpiredPage}/>
+                <Route exact path="/examining" component={ExaminingPage}/>
                 </Switch>
             </div>
             </Router>
