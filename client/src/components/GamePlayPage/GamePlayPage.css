@@ -1,6 +1,10 @@
 .game_board{
     display: grid;
+    width: 300px;
     grid-template-columns: 100px 100px 100px;
-	grid-template-rows: 100px 100px 100px;
-
+    grid-template-rows: 100px 100px 100px;
+    border: 2px solid black;
+}
+.game_board_cell{
+    border: 2px solid black;
 }

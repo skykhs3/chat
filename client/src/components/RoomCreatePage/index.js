@@ -32,6 +32,14 @@ class RoomCreatePage extends React.Component{
       roomTitle:this.state.roomTitle,
       adminID:this.state.adminID,
       adminNickname:this.state.adminNickname,
+    }).then(res=>{
+      console.log(res.data)
+      if(res.data.success===false){
+
+      }
+      else{
+        this.props.history.push('/gameplay')
+      }
     })
   }
   roomTitleOnChange=(event)=>{

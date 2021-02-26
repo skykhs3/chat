@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const jwt =require('jsonwebtoken')
 
 const userSchema = mongoose.Schema({
+    
     nickname :{
         type : String,
         maxlength: 50,
@@ -23,6 +24,9 @@ const userSchema = mongoose.Schema({
         2 : 방 만드는중
         3 : 게임 대기중 + 게임 하는중
         */
+    },
+    joinedRoomID:{
+        type:String,
     },
     token:{
         type:String

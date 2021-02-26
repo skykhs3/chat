@@ -44,13 +44,13 @@ class RegisterPage extends React.Component{
       this.setState({nickname:event.currentTarget.value});
     }
     onSubmitHandler = (event) => {
+      var canPass=true;
       event.preventDefault();
-      console.log(this.state.email);
-      console.log(this.state.nickname);
       if(this.state.password.length<=5){
         this.setState({
           passwordHelperText:"비밀번호는 6자리이상으로 설정해주세요"
         })
+        canPass=false;
       }
       else{
         this.setState({
@@ -61,6 +61,7 @@ class RegisterPage extends React.Component{
         this.setState({
           password_confirmedHelperText:"비밀번호가 일치하지 않습니다"
         })
+        canPass=false;
       }
       else{
         this.setState({
@@ -71,13 +72,14 @@ class RegisterPage extends React.Component{
         this.setState({
           nicknameHelperText:"닉네임은 3글자 이상으로 해주세요"
         })
+        canPass=false;
       }
       else{
         this.setState({
           nicknameHelperText:""
         })
       }
-      if(this.state.emailHelperText==="" && this.state.passwordHelperText==="" && this.state.password_confirmedHelperText==="" && this.state.nicknameHelperText===""){
+      if(canPass==true){
       axios.post('/api/users/register', {
         email: this.state.email,
         password: this.state.password,
@@ -165,7 +167,7 @@ class RegisterPage extends React.Component{
               type="submit"
               variant="outlined"
               fullWidth
-            >Sign In</Button>
+            >Register</Button>
 </form>
 
         </div>);
