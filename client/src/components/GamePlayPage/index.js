@@ -65,11 +65,7 @@ class GamePlayPage extends React.Component {
         }
     }
     exitOnClickHanlder=(event)=>{
-        axios.post('/api/users/changeOnlineState',{_id:this.state.userInfo._id,onlineState:1}).then(res=>{
-            if(res.data.success===true){
-                this.props.history.push("/")
-            }
-        })
+        
     }
     render() {
         console.log(this.state)

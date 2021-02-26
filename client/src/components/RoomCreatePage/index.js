@@ -10,20 +10,23 @@ class RoomCreatePage extends React.Component{
       adminID:"",
       adminEmail:"",
       adminNickname:"",
+    //  userInfo:{},
     }
     // axios.post('/api/users/findByID',{
     //   _id:"60375c991c30fa0ed78145b2"
     // }).then(res=>console.log(JSON.stringify(res.data)));
+    
+  }
+  componentDidMount(){
     axios.get('/api/users/auth').then(res=>{
-     // console.log(res.data);
-      if(res.data.isAuth===false){
-          this.props.history.push('/login')
-      }
-      else{
-        this.state.adminID=res.data._id;
-        this.state.adminNickname=res.data.nickname;
-      }
-  })
+      // console.log(res.data);
+       if(res.data.isAuth===false){
+           this.props.history.push('/login')
+       }
+       else{
+         this.setState({adminID:res.data._id,adminEmail:res.data.email,adminNickname:res.data.nickname});
+       }
+   })
   }
   onSubmitHandler=(event)=>{
     event.preventDefault();
@@ -46,7 +49,12 @@ class RoomCreatePage extends React.Component{
     this.setState({ roomTitle: event.currentTarget.value });
   }
   exitOnClickHandler=(event)=>{
-    this.props.history.push('/')
+    console.log(this.state.userInfo)
+    axios.post('/api/users/changeOnlineState',{_id:this.state.adminID,onlineState:1}).then(res=>{
+      if(res.data.success===true){
+          this.props.history.push("/")
+      }
+  })
   }
     render(){
          return (<div>

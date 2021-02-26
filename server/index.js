@@ -110,14 +110,15 @@ app.post('/api/users/createRoom', (req, res) => {
   })
 })
 app.post('/api/users/changeOnlineState', (req, res) => {
-  console.log(req.body._id)
+  console.log(`_id ${req.body._id}`)
   User.findByIdAndUpdate(
     req.body._id
     , { onlineState: req.body.onlineState, joinedRoomID: req.body.joinedRoomID }, (err, user) => {
       console.log(user)
-      if (err) return res.json({ succes: false, err })
+      if (err) return res.json({ success: false, err })
       res.status(200).json({
         success: true,
+        ...user._doc,
       })
     })
 })
