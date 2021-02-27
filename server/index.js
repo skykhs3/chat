@@ -10,7 +10,7 @@ const { auth } = require('./middleware/auth')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
-var timeLimitMap = new Map()
+var timeLimitMap = new Map();
 var testArray = [];
 var gameIntervalTime = 10000;
 
@@ -174,8 +174,7 @@ app.post('/api/rooms/startgame', (req, res) => {
     room.timeLimit = new Date(new Date().getTime() + gameIntervalTime);
     await room.save((err, updatedRoom) => {
       if (err) return res.json({ success: false, message: "err" })
-      timeLimitMap.set(room._doc._id, updatedRoom.timeLimit);
-      testArray.push(updatedRoom.timeLimit)
+      timeLimitMap.set(String(room._doc._id),updatedRoom.timeLimit);
       app.io.emit("/sToC/rooms/needToRefresh",);
       res.json({ success: true });
     })
@@ -247,10 +246,8 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
       })
     }
     else {
-      console.log("parti"+req.body.participantID)
       User.findById(req.body.participantID,(err,participant)=>{
         if(err) return res.json({success:false})
-        console.log(participant)
         room.participantID = "";
         room.participantNickname = "";
         participant.joinedRoomID = "";
@@ -270,15 +267,24 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
 
 
 })
-
+var test =new Map();
+test.set('1',2);
+test.set('1',3);
+test.forEach((value, key, map)=>{
+  console.log(value + " "+key)
+})
 
 //자기 턴이 지났는지 안지났는지 확인
 playAlert = setInterval(function () {
   timeLimitMap.forEach((value, key, map) => {
+    console.log(key+" "+value+" "+( new Date().getTime()))
     if (value.getTime() < new Date().getTime()) {
       Room.findById(key, (err, room) => {
         if (room.winner === 0) {
           room.winner = 3 - room.whoseTurn
+          if(room.winner==2){
+            console.log("T");
+          }
           app.io.emit("/sToC/rooms/needToRefresh",);
         }
         room.save((err, updatedRoom) => { });
@@ -426,8 +432,8 @@ app.post('/api/users/didTurn', (req, res) => {
       room.whoseTurn = 3 - room.whoseTurn
       await room.save((err, updatedRoom) => {
         if (err) return res.json({ success: false, message: "err" })
-        timeLimitMap.set(room._doc._id, updatedRoom.timeLimit);
-        testArray.push(updatedRoom.timeLimit)
+        timeLimitMap.set(String(room._doc._id), updatedRoom.timeLimit);
+    
       })
       app.io.emit("/sToC/rooms/needToRefresh",);
       res.json({ success: true });
