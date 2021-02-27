@@ -2,6 +2,7 @@ import React from 'react'
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import './HomePage.css';
+import socket from '../../utills/socket'
 class HomePage extends React.Component{
     
     constructor(props){
@@ -13,9 +14,7 @@ class HomePage extends React.Component{
         
       //  axios.get('/api/axiostest').then(res=>console.log(res.data));
     }
-    componentDidMount(){
-
-        //TODO 에러처리
+    aa=()=>{
         axios.get('/api/users/auth').then(res=>{
             //  console.log(res.data)
               this.setState({userInfo:res.data});
@@ -28,6 +27,15 @@ class HomePage extends React.Component{
           })
         axios.get('/api/rooms/loadList').then(res=>{
             this.setState({roomList:res.data.docs})
+        })
+    }
+    componentDidMount(){
+
+        //TODO 에러처리
+        this.aa();
+        socket.on('/sToC/rooms/needToRefresh', () => {
+            ///본인 방에 해당하는 것만 refresh 해야함. 방번호 인자 넘기자.
+            this.aa(0);
         })
     }
     logoutOnClickHanlder=(e)=>{
@@ -53,15 +61,13 @@ class HomePage extends React.Component{
        // isDeleted:false,
        // participantID가 ""
        console.log(this.state.userInfo)
+       //Todo user의 참가한 방이 빈칸일 때만 방에 참가가 가능하게 하기.
        axios.post('/api/rooms/joinRoom', {
         _id:roomInfo._id,
         userInfo:this.state.userInfo,
       }).then(res=>{
         console.log(res.data)
           if(res.data.success===true){
-              console.log("canjoion")
-//Todo this.state.userInfo._id 같은 항목들이 null이거나 초기화 상태면 누르지 못하도록 막기.
-
               axios.post('/api/users/changeOnlineState',{
                   _id:this.state.userInfo._id,
                   onlineState:3,
@@ -69,6 +75,7 @@ class HomePage extends React.Component{
               }).then(res=>{
                   if(res.data.success===true){
                     this.props.history.push("/gameplay")
+                    
                   }
               })
           }
@@ -89,7 +96,7 @@ class HomePage extends React.Component{
                 새로운 방 만들기
             </Button>
 
-        {this.state.roomList.map(item=>(<div className="roomCell"><Button key={item.id} onClick={this.roomCellOnClickHandler(item)} className="roomCell">{item.roomTitle}&nbsp;<span> ( 1 / 2 )</span></Button></div>))}
+        {this.state.roomList.map(item=>(item.isDeleted===false && item.isStart===false && <div className="roomCell"><Button key={item.id} onClick={this.roomCellOnClickHandler(item)} className="roomCell">{item.roomTitle}&nbsp;<span> ( 1 / 2 )</span></Button></div>))}
             </div>);
     }
 

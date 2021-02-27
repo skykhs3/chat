@@ -36,6 +36,18 @@ const roomSchema = mongoose.Schema({
     },
     timeLimit:{
         type:Date,
+    },
+    winner:{
+        type:Number,
+        default:0,
+    },
+    gameHistory:{
+        type:Array,
+        'default':[]
+    },
+    whoFirst:{
+        type:Number,
+        default:1,
     }
 })
 const Room=mongoose.model('Room',roomSchema);

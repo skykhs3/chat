@@ -1,9 +1,17 @@
 import axios from 'axios';
 import React from 'react'
+import socket from '../../utills/socket'
 class ExaminingPage extends React.Component {
     onClickHandler=()=>{
-        axios.get("/api/axiostest",(req,res)=>{
-            console.log(res);
+        axios.get("/api/axiostest").then((res)=>{
+            console.log(res.data);
+        })
+        console.log("TEst");
+    //    socket.emit('test',{err:"GG"});
+    }
+    componentDidMount() {
+        socket.on('/cToS/rooms/endTime',(item)=>{
+            console.log(item);
         })
     }
     render() {
