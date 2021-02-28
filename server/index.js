@@ -80,15 +80,16 @@ app.post('/api/users/login', (req, res) => {
   })
 })
 app.get('/api/users/auth', auth, (req, res) => {
-  res.status(200).json({
-    isAuth:true,
-    _id: req.user.id,
-    email: req.user.email,
-    nickname: req.user.nickname,
-    token: req.token,
-    onlineState: req.user.onlineState,
-    joinedRoomID: req.user.joinedRoomID
+  
+  User.findById(req.user.id,(err,user)=>{
+    if(err) return res.json({isAuth:false});
+    console.log(user._doc)
+    res.json({
+      isAuth:true,
+      ...user._doc
+    })
   })
+  
 })
 app.get('/api/users/logout', auth, (req, res) => {
   User.findOneAndUpdate({
@@ -210,15 +211,10 @@ app.post('/api/rooms/readygame', (req, res) => {
   })
 })
 app.post('/api/rooms/exitGameRoom', (req, res) => {
-  // {
-  //   adminID:
-  //    participantID:
-  //   roomID:
-  //    isAdmin:
-  // }
+
   Room.findById(req.body.roomID, (err, room) => {
     if (err) return res.json({ success: false });
-    if(room.isStart===true && room.winner===true){
+    if(room.isStart===true && room.winner===0){
       return res.json({success:false})
     }
     room.isReady = false;
@@ -436,7 +432,7 @@ app.post('/api/users/didTurn', (req, res) => {
 app.post('/api/rooms/auth', (req, res) => {
   Room.findById(req.body._id, (err, roomInfo) => {
 
-    if (err)return res.json({ isAuth: false, message:req.body_id+" err"})
+    if (err)return res.json({ isAuth: false, message:"id "+req.body._id+" err"})
     else if(!roomInfo) return res.json({isAuth:false, message:"can't find room"})
     else if (roomInfo.isDeleted === true) {
       return res.json({ isAuth: false, message:"deleted room"})

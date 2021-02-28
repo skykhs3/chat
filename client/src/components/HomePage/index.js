@@ -73,18 +73,20 @@ class HomePage extends React.Component{
 
 
         
-        
+       // alert(JSON.stringify(res.data))
           if(res.data.success===true){
               axios.post('/api/users/changeOnlineState',{
                   _id:this.state.userInfo._id,
                   onlineState:3,
                   joinedRoomID:roomInfo._id,
               }).then(res=>{
-              //  alert(JSON.stringify(res.data))
+                alert(JSON.stringify(res.data))
                   if(res.data.success===true){
 
-                    ///?
+                   setInterval(()=>{
                     this.props.history.push("/gameplay")
+                   },10000)
+                    
                     
                   }
               })

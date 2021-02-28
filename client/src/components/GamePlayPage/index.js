@@ -34,10 +34,10 @@ class GamePlayPage extends React.Component {
                 console.log("Json "+JSON.stringify(resUser.data))
                 axios.post('/api/rooms/auth', { _id: resUser.data.joinedRoomID }).then(resRoom => {
                     
-               //     alert("Room "+resRoom.data+" User "+resUser.data.joinedRoomID)
+                    
                     this.setState({ roomTitle: resRoom.data.roomTitle })
                     if (resRoom.data.isAuth === false) {
-                
+                      //  alert("Room "+JSON.stringify(resRoom.data)+"\n\nUser "+JSON.stringify(resUser.data))
                             this.props.history.push('/')      
                     }
                     else {
@@ -45,7 +45,7 @@ class GamePlayPage extends React.Component {
                             if (this.state.roomInfo.winner !== 0) {
                                 if(this.alreadyAlert==false){
                                     this.alreadyAlert=true;
-                                alert("게임 종료 : " + this.state.roomInfo.winner==3?"무승부":((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 의 승리"))
+                                alert("게임 종료 : " + (this.state.roomInfo.winner===3?"무승부":((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 의 승리")))
                                 }
                             }
                         })
