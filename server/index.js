@@ -237,6 +237,9 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
     if (req.body.isAdmin === true) {
       User.findById(req.body.adminID, (err, admin) => {
         if (err) return res.json({ success: false });
+
+        ///준비 중에 나감
+        if(room.winner===0){
         if (room.participantID !== "") {
           room.adminID = room.participantID;
           room.adminNickname = room.participantNickname;
@@ -248,6 +251,12 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
         }
         admin.joinedRoomID = "";
         admin.onlineState = 1;
+      }
+      else{
+        room.isDeleted = true;
+        admin.joinedRoomID = "";
+        admin.onlineState = 1;
+      }
         ///admin, room 저장
         room.save((err,updatedRoom)=>{
           if(err) return res.json({ success: false });
@@ -263,8 +272,13 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
     else {
       User.findById(req.body.participantID,(err,participant)=>{
         if(err) return res.json({success:false})
+        if(room.winner===0){
         room.participantID = "";
         room.participantNickname = "";
+        }
+        else{
+          room.isDeleted=true;
+        }
         participant.joinedRoomID = "";
         participant.onlineState = 1;
         room.save((err,updatedRoom)=>{
@@ -478,7 +492,6 @@ app.post('/api/rooms/joinRoom', (req, res) => {
     if(err) return res.json({success:false,message:"no room"})
     User.findById(req.body.userID,(err,user)=>{
       if(err) return res.json({success:false,message:"no user"})
-      console.log(JSON.stringify(room)+"\n\n\n"+JSON.stringify(user)+"\n"+req.body.userID)
       if(room.isDeleted===true){
         
         return res.json({success:false,message:"deleted room"})
