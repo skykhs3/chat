@@ -1,4 +1,27 @@
+.T{
+    
+  
+}
 .roomCell{
     display:block;
     /* color:red; */
+}
+.main{
+    display: flex;
+}
+.leftBigBox{
+    margin: 10px;
+    display:block;
+    width: 30%;
+    height: 100vh;
+    border-radius:8px;
+    border: medium solid #E0E0E0;
+}
+.rightBigBox{
+    margin:10px 10px 10px 0;
+    display: block;
+    width: 70%;
+    height: 100vh;
+    border-radius:8px;
+    border: medium solid #E0E0E0;
 }
