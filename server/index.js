@@ -84,7 +84,6 @@ app.get('/api/users/auth', auth, (req, res) => {
   
   User.findById(req.user.id,(err,user)=>{
     if(err) return res.json({isAuth:false});
-    console.log(user._doc)
     res.json({
       isAuth:true,
       ...user._doc
@@ -132,7 +131,6 @@ app.post('/api/users/createRoom', (req, res) => {
   })
 })
 app.post('/api/users/changeOnlineState', (req, res) => {
-  //console.log(`_id ${req.body._id}`)
   if(req.body._id==null){
     return res.json({success:false})
   }
@@ -169,7 +167,7 @@ app.post('/api/users/changeOnlineState', (req, res) => {
 ///만료된 방인가?
 app.post('/api/rooms/startgame', (req, res) => {
   ///_id : roomID
-  if(req.body._id===null){
+  if(req.body._id==null){
     return res.json({success:false})
   }
   Room.findById(req.body._id, async (err, room) => {
@@ -177,9 +175,6 @@ app.post('/api/rooms/startgame', (req, res) => {
     if (room.isDeleted === true) return res.json({ success: false, message: "room deleted" })
     if (room.isStart === true) return res.json({ success: false, message: "already start" })
     if (room.isReady === false) return res.json({ success: false, message: "not ready" })
-
-    //must undo
-    // if(room.isStart===true) return res.json({success:false,message:"already start"})
 
     if (room.participantID === "") return res.json({ success: false, message: "no participant" })
     room.isStart = true;
@@ -496,20 +491,24 @@ app.post('/api/rooms/joinRoom', (req, res) => {
         
         return res.json({success:false,message:"deleted room"})
       }
-      else if(room.isStart===true){
+      else if(room.participantID!=user._id && room.adminID!=user._id && room.isStart===true){
         
         return res.json({success:false,message:"already start"})
       }
-      else if(room.participantID!==""){
-        
+      else if(room.participantID!=user._id && room.adminID!=user._id && room.participantID!==""){
+        console.log(room.participantID)
+        console.log(room.adminID)
+        console.log(user._id)
+   
         return res.json({success:false,message:"참가자 있음"})
       }
-      else if(room._doc.adminID == user._doc._id){
-        return res.json({success:false,message:"방장임"})
-      }
       else{
-        room.participantID=user._doc._id;
-        room.participantNickname=user._doc.nickname
+        ///이미 참가했으면 수정하지 말기.
+        if(room.participantID!=user._id && room.adminID!=user._id){
+          console.log("comein")
+          room.participantID=user._doc._id;
+          room.participantNickname=user._doc.nickname
+        }
         user.onlineState=3;
         user.joinedRoomID=room._doc._id;
         room.save((err,updatedRoom)=>{

@@ -39,7 +39,6 @@ class HomePage extends React.Component {
     }
     componentDidMount() {
 
-        //TODO 에러처리
         this.aa();
         socket.on('/sToC/rooms/needToRefresh', () => {
             ///본인 방에 해당하는 것만 refresh 해야함. 방번호 인자 넘기자.
@@ -74,6 +73,7 @@ class HomePage extends React.Component {
             roomID: roomInfo._id,
             userID: this.state.userInfo._id,
         }).then(res => {
+            console.log(JSON.stringify(res.data))
             if (res.data.success === true) {
                 this.props.history.push("/gameplay")
             }

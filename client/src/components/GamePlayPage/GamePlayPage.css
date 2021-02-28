@@ -8,3 +8,10 @@
 .game_board_cell{
     border: 2px solid black;
 }
+.VS{
+    margin: 20px;
+}
+.portrait{
+    display: flex;
+    text-align: center;
+}

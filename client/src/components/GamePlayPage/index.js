@@ -8,9 +8,9 @@ import socket from '../../utills/socket'
 class GamePlayPage extends React.Component {
     constructor(props) {
         super(props)
-        this.alreadyAlert=false;
+        this.alreadyAlert = false;
         this.state = {
-            test:1,
+            test: 1,
             isAdmin: true,
             myNickname: "",
             myID: "",
@@ -20,12 +20,12 @@ class GamePlayPage extends React.Component {
             otherID: "",
             userInfo: {},
             roomInfo: {},
-            cellState:["","","","","","","","",""]
+            cellState: ["", "", "", "", "", "", "", "", ""]
         }
     }
     aa = (type) => {
         axios.get('/api/users/auth').then(resUser => {
-    
+
             this.setState({ userInfo: resUser.data });
             if (resUser.data.isAuth === false) {
                 this.props.history.push('/login')
@@ -34,11 +34,11 @@ class GamePlayPage extends React.Component {
                 axios.post('/api/rooms/auth', { _id: resUser.data.joinedRoomID }).then(resRoom => {
                     this.setState({ roomTitle: resRoom.data.roomTitle })
                     if (resRoom.data.isAuth === false) {
-                        this.props.history.push('/')      
+                        this.props.history.push('/')
                     }
                     else {
-                        this.setState({ roomInfo: resRoom.data,test:2 }, () => {
-                            
+                        this.setState({ roomInfo: resRoom.data, test: 2 }, () => {
+
                         })
                         this.setState({
                             myID: resUser.data._id,
@@ -77,73 +77,73 @@ class GamePlayPage extends React.Component {
 
         })
     }
-    componentDidUpdate(){
-        if (this.state.roomInfo.winner !== 0 && this.state.roomInfo.winner!=null) {
-            if(this.alreadyAlert==false){
+    componentDidUpdate() {
+        if (this.state.roomInfo.winner !== 0 && this.state.roomInfo.winner != null) {
+            if (this.alreadyAlert == false) {
 
-                this.alreadyAlert=true;
-            alert("게임 종료 : " + (this.state.roomInfo.winner===3?"무승부":((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 의 승리")))
+                this.alreadyAlert = true;
+                alert("게임 종료 : " + (this.state.roomInfo.winner === 3 ? "무승부" : ((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 의 승리")))
             }
         }
     }
 
     exitOnClickHanlder = (event) => {
-  // {
-  //   adminID:
-  //    participantID:
-  //   roomID:
-  //    isAdmin:
-  // }
-  axios.post('/api/rooms/exitGameRoom',{adminID:this.state.roomInfo.adminID,participantID:this.state.roomInfo.participantID,roomID:this.state.roomInfo._id,isAdmin:this.state.isAdmin}).then(res=>{
-if(res.data.success===true){
-    this.props.history.push('/')
-}
-})
-        
+        // {
+        //   adminID:
+        //    participantID:
+        //   roomID:
+        //    isAdmin:
+        // }
+        axios.post('/api/rooms/exitGameRoom', { adminID: this.state.roomInfo.adminID, participantID: this.state.roomInfo.participantID, roomID: this.state.roomInfo._id, isAdmin: this.state.isAdmin }).then(res => {
+            if (res.data.success === true) {
+                this.props.history.push('/')
+            }
+        })
+
     }
     gameStartOnClickHandler = (event) => {
-        if(this.state.isAdmin===true){
-            axios.post('/api/rooms/startgame',{_id:this.state.roomInfo._id}).then(res=>{
+        if (this.state.isAdmin === true) {
+            axios.post('/api/rooms/startgame', { _id: this.state.roomInfo._id }).then(res => {
 
             })
         }
-        else{
-           
-            if(this.state.roomInfo.isReady===true){
-                
-                axios.post('/api/rooms/readygame',{_id:this.state.roomInfo._id,isReady:true}).then(res=>{console.log(res)})
+        else {
+
+            if (this.state.roomInfo.isReady === true) {
+
+                axios.post('/api/rooms/readygame', { _id: this.state.roomInfo._id, isReady: true }).then(res => { console.log(res) })
             }
-            else{
-                
-                axios.post('/api/rooms/readygame',{_id:this.state.roomInfo._id,isReady:false}).then(res=>{console.log(res)})
+            else {
+
+                axios.post('/api/rooms/readygame', { _id: this.state.roomInfo._id, isReady: false }).then(res => { console.log(res) })
             }
         }
     }
-    cellOnClickHanlder = (num)=>(event) => {
+    cellOnClickHanlder = (num) => (event) => {
         // {
         //   _id :  룸번호
         //   isAdmin:  어드민인가?
         //   position:돌을 둔 위치 : Number,
         // }
-    
+
         axios.post('/api/users/didTurn', { _id: this.state.roomInfo._id, isAdmin: (this.state.isAdmin === true ? 1 : 2), position: num }).then(res => {
-           
+
         })
     }
-    cellOnMouseEnterHadler=(num)=>(event)=>{
-        const {cellState}= this.state
-        cellState[num]=this.state.isAdmin?"O":"X"
-        this.setState({cellState:cellState})
+    cellOnMouseEnterHadler = (num) => (event) => {
+        const { cellState } = this.state
+        cellState[num] = this.state.isAdmin ? "O" : "X"
+        this.setState({ cellState: cellState })
     }
-    cellOnMouseLeaveHandler=(num)=>()=>{
-        const {cellState}= this.state
-        cellState[num]=""
-        this.setState({cellState:cellState})
+    cellOnMouseLeaveHandler = (num) => () => {
+        const { cellState } = this.state
+        cellState[num] = ""
+        this.setState({ cellState: cellState })
     }
     render() {
         var OX = [];
-        for (var i = 0; i < 9; i++){OX.push(0)}
-        
+        for (var i = 0; i < 9; i++) { OX.push(0) }
+
         if (this.state.roomInfo.gameHistory != null) {
 
             for (var i = 0; i < Object.keys(this.state.roomInfo.gameHistory).length; i++) {
@@ -161,7 +161,6 @@ if(res.data.success===true){
             if (this.state.isAdmin === true && this.state.otherID === "") {
                 return (<div>상대를 기다리는 중입니다...</div>);
             }
-            //Todo 게임 준비버튼을 눌러주세요, 게임 시작버튼을 눌러주세요.
             else if (this.state.otherID !== "") {
                 return (<div>{this.state.myNickname} (나) VS {this.state.otherNickname} (상대) </div>);
             }
@@ -171,7 +170,7 @@ if(res.data.success===true){
         }
         const renderRemainTime = () => {
             if (this.state.roomInfo.winner !== 0) {
-                return (<div>{this.state.roomInfo.winner===3 ? "무승부":((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname)+ " 승리!")}</div>)
+                return (<div>{this.state.roomInfo.winner === 3 ? "무승부" : ((this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 승리!")}</div>)
             }
             else if (this.state.roomInfo.isStart === true) {
 
@@ -180,21 +179,55 @@ if(res.data.success===true){
             return (<div></div>)
         }
 
+        var alertMsg = "게임 로딩중입니다. 잠시 기다려주세요";
+        if (this.state.roomTitle == "") {
+
+        }
+        else if (this.state.roomInfo.isStart === false) {
+            alertMsg = "참가자가 준비 완료해야 방장이 게임 시작할 수 있습니다."
+        }
+        else if (this.state.roomInfo.winner === 0) {
+            if ((this.state.roomInfo.whoseTurn === 1 && this.state.isAdmin === true) || (this.state.roomInfo.whoseTurn === 2 && this.state.isAdmin === false)) {
+                alertMsg = "본인 차례입니다."
+            }
+            else {
+                alertMsg = "상대방 차례입니다."
+            }
+        }
+        else {
+            if (this.state.roomInfo.winner === 3) {
+                alertMsg = "무승부!"
+            }
+            else {
+                alertMsg = (this.state.roomInfo.winner === 1 ? this.state.roomInfo.adminNickname : this.state.roomInfo.participantNickname) + " 승리!"
+            }
+        }
+
         return (<div>
-            <div>{this.state.isStart===true?"":"참가자가 게임 준비를 해야 방장이 게임 시작할 수 있습니다."}</div>
-            <div><Button onClick={this.exitOnClickHanlder}>게임 나가기</Button><Button onClick={this.gameStartOnClickHandler}>{this.state.isAdmin ? "게임 시작하기" : (this.state.roomInfo.isReady===true?"게임 준비 취소하기":"게임 준비하기")}</Button></div>
+            <div >
+                <div className="navigationBar">SPARCS Newbie Project</div>
 
+            </div>
+            <div className="main">
+                <div className="leftBigBox">
+                    <div>닉네임 : {this.state.myNickname}&nbsp;</div>
+                    <div><Button onClick={this.exitOnClickHanlder}>방 나가기</Button></div>
+                    <div>  <Button onClick={this.gameStartOnClickHandler}>{this.state.isAdmin ? "게임 시작하기" : (this.state.roomInfo.isReady === true ? "준비 취소하기" : "준비 완료하기")}</Button></div>
+                    <div>남은 시간 : {parseInt(this.state.remainTime / 1000)} 초</div>
+                </div>
+                <div className="rightBigBox">
+                    <div>방 제목 : {this.state.roomTitle}</div>
+                    <div>{alertMsg}</div>
+                    <div className="portrait">
 
-            <div>{this.state.roomTitle==""?(<div>잠시만 기다려주세요...<br></br> 게임 로딩중입니다...</div>):(<div>
-            <div>방 제목 : {this.state.roomTitle}</div>
-            <div>방장 : {this.state.isAdmin ? this.state.myNickname : this.state.otherNickname} ( 준비완료 )</div>
-            <div>참가자 : {this.state.isAdmin ? this.state.otherNickname : this.state.myNickname} {this.state.roomInfo.isReady===true? "( 준비 완료 )" : "( 대기중 )"}</div>
-            {test()}
-            {renderRemainTime()}</div>)}</div>
+                        <div><div>{this.state.isAdmin ? this.state.myNickname : this.state.otherNickname}</div><div> (방장)</div></div>
+                        <div className="VS">VS</div>
+                        <div>
+                        <div>{(this.state.isAdmin ? this.state.otherNickname : this.state.myNickname)===""?"참가자 기다리는 중":(this.state.isAdmin ? this.state.otherNickname : this.state.myNickname)}</div><div> {this.state.roomInfo.isReady === true ? "( 준비 완료 )" : "( 준비 중 )"}</div>
+                        </div>
 
-            
-
-            <div className="game_board">
+                    </div>
+                    <div className="game_board">
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(0)} onMouseEnter={this.cellOnMouseEnterHadler(0)} onMouseLeave={this.cellOnMouseLeaveHandler(0)} name="0">{OX[0] === 0 ? this.state.cellState[0] : (OX[0] === 1 ? 'O' : 'X')}</Button>
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(1)} onMouseEnter={this.cellOnMouseEnterHadler(1)} onMouseLeave={this.cellOnMouseLeaveHandler(1)} name="1">{OX[1] === 0 ? this.state.cellState[1] : (OX[1] === 1 ? 'O' : 'X')}</Button>
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(2)} onMouseEnter={this.cellOnMouseEnterHadler(2)} onMouseLeave={this.cellOnMouseLeaveHandler(2)} name="2">{OX[2] === 0 ? this.state.cellState[2] : (OX[2] === 1 ? 'O' : 'X')}</Button>
@@ -204,6 +237,8 @@ if(res.data.success===true){
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(6)} onMouseEnter={this.cellOnMouseEnterHadler(6)} onMouseLeave={this.cellOnMouseLeaveHandler(6)} name="6">{OX[6] === 0 ? this.state.cellState[6] : (OX[6] === 1 ? 'O' : 'X')}</Button>
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(7)} onMouseEnter={this.cellOnMouseEnterHadler(7)} onMouseLeave={this.cellOnMouseLeaveHandler(7)} name="7">{OX[7] === 0 ? this.state.cellState[7] : (OX[7] === 1 ? 'O' : 'X')}</Button>
                 <Button className="game_board_cell" onClick={this.cellOnClickHanlder(8)} onMouseEnter={this.cellOnMouseEnterHadler(8)} onMouseLeave={this.cellOnMouseLeaveHandler(8)} name="8">{OX[8] === 0 ? this.state.cellState[8] : (OX[8] === 1 ? 'O' : 'X')}</Button>
+            </div>
+                </div>
             </div>
         </div>);
     }

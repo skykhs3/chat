@@ -90,7 +90,6 @@ class RegisterPage extends React.Component{
           alert("성공적으로 회원가입되었습니다")
         }
         else{
-          //Todo 회원 가입 실패시 오류 메세지
           alert("알 수 없는 오류가 발생하였습니다")
         }
       })
