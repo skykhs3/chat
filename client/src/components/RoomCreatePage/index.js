@@ -32,7 +32,7 @@ class RoomCreatePage extends React.Component{
     event.preventDefault();
     // console.log()
     axios.post('/api/users/createRoom', {
-      roomTitle:this.state.roomTitle,
+      roomTitle:this.state.roomTitle===""?(this.state.adminNickname+" 의 틱택토"):this.state.roomTitle,
       adminID:this.state.adminID,
       adminNickname:this.state.adminNickname,
     }).then(res=>{
@@ -64,9 +64,9 @@ class RoomCreatePage extends React.Component{
             <TextField 
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             label="방 이름"
+            placeholder={this.state.adminNickname+" 의 틱택토"}
             inputProps={{
                 maxLength: 50,
               }}

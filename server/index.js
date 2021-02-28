@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const { User } = require('./models/User')
 const { Room } = require('./models/Room')
 const { auth } = require('./middleware/auth')
+const { json } = require('express')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -36,7 +37,7 @@ app.get('/', (req, res) => res.send('Hello World!'))
 app.post('/api/users/findByID', (req, res) => {
   User.findById(req.body._id, (err, user) => {
 
-    if (!user) {
+    if (!user || err) {
       return res.json({
         success: false,
       })
@@ -105,7 +106,10 @@ app.get('/api/users/logout', auth, (req, res) => {
 var num = 0;
 app.get('/api/axiostest', (req, res) => {
   app.io.emit("/socket/rooms/endTime", "server->client");
-  res.json({ err: 1 });
+  User.findById("60375c991c30fa0ed78145",(err,user)=>{
+    if(err){return res.json({success:false})}
+    return res.json({success:true})
+  })
 })
 app.post('/api/users/createRoom', (req, res) => {
   const room = new Room(req.body)
@@ -129,6 +133,9 @@ app.post('/api/users/createRoom', (req, res) => {
 })
 app.post('/api/users/changeOnlineState', (req, res) => {
   //console.log(`_id ${req.body._id}`)
+  if(req.body._id==null){
+    return res.json({success:false})
+  }
   User.findById(
     req.body._id
     , (err, user) => {
@@ -162,6 +169,9 @@ app.post('/api/users/changeOnlineState', (req, res) => {
 ///만료된 방인가?
 app.post('/api/rooms/startgame', (req, res) => {
   ///_id : roomID
+  if(req.body._id===null){
+    return res.json({success:false})
+  }
   Room.findById(req.body._id, async (err, room) => {
     if (err) return res.json({ success: false, message: "err" })
     if (room.isDeleted === true) return res.json({ success: false, message: "room deleted" })
@@ -188,6 +198,9 @@ app.post('/api/rooms/startgame', (req, res) => {
   })
 })
 app.post('/api/rooms/readygame', (req, res) => {
+  if(req.body._id==null){
+    return res.json({success:false})
+  }
   Room.findById(req.body._id, async (err, room) => {
     if (err) return res.json({ success: false, message: "err" })
     if (room.isDeleted === true) return res.json({ success: false, message: "room deleted" })
@@ -212,6 +225,9 @@ app.post('/api/rooms/readygame', (req, res) => {
 })
 app.post('/api/rooms/exitGameRoom', (req, res) => {
 
+  if(req.body.roomID==null || req.body.adminID==null || req.body.participantID==null){
+    return res.json({success:false})
+  }
   Room.findById(req.body.roomID, (err, room) => {
     if (err) return res.json({ success: false });
     if(room.isStart===true && room.winner===0){
@@ -289,6 +305,9 @@ app.post('/api/users/didTurn', (req, res) => {
   //   isAdmin:  어드민인가?
   //   position:돌을 둔 위치 : Number,
   // }
+  if(req.body._id==null){
+    return res.json({success:false})
+  }
   Room.findById(req.body._id, async (err, room) => {
     if (err) return res.json({ success: false, message: "err" })
     for (var i = 0; i < room.gameHistory.length; i++) {
@@ -452,37 +471,44 @@ app.get('/api/rooms/loadList', (req, res) => {
   })
 });
 app.post('/api/rooms/joinRoom', (req, res) => {
-  Room.findById(req.body._id, (err, room) => {
-
-    if (!room) {
-      
-      return res.json({
-        success: false,
-        message: "noRoom"
-      })
-    }
-    else {
-      //Todo 터치 못하게 막는 화면 필
-      if (room._doc.isDeleted === false && room._doc.isStart===false && room._doc.participantID === "" && room._doc.adminID !== req.body.userInfo._id) {
-        room.participantID = req.body.userInfo._id;
-        room.participantNickname = req.body.userInfo.nickname;
-        room.save((err, updatedRoom) => {
-          if (err) {
-            
-            return res.json({ success: false,message:"err" });
-          }
-          app.io.emit("/sToC/rooms/needToRefresh",);
-          return res.json({ success: true })
+  if(req.body.roomID==null || req.body.userID==null){
+    return res.json({success:false})
+  }
+  Room.findById(req.body.roomID, (err, room) => {
+    if(err) return res.json({success:false,message:"no room"})
+    User.findById(req.body.userID,(err,user)=>{
+      if(err) return res.json({success:false,message:"no user"})
+      console.log(JSON.stringify(room)+"\n\n\n"+JSON.stringify(user)+"\n"+req.body.userID)
+      if(room.isDeleted===true){
+        
+        return res.json({success:false,message:"deleted room"})
+      }
+      else if(room.isStart===true){
+        
+        return res.json({success:false,message:"already start"})
+      }
+      else if(room.participantID!==""){
+        
+        return res.json({success:false,message:"참가자 있음"})
+      }
+      else if(room._doc.adminID == user._doc._id){
+        return res.json({success:false,message:"방장임"})
+      }
+      else{
+        room.participantID=user._doc._id;
+        room.participantNickname=user._doc.nickname
+        user.onlineState=3;
+        user.joinedRoomID=room._doc._id;
+        room.save((err,updatedRoom)=>{
+          if(err) return res.json({success:false})
+          user.save((err,updatedUser)=>{
+            if(err) return res.json({success:false})
+            res.json({success:true,})
+            app.io.emit("/sToC/rooms/needToRefresh",);
+          })
         })
       }
-      else {
-       
-        return res.json({
-          success: false,
-          message: "본인이 만든방"
-        })
-      }
-    }
+    })
   })
 })
 

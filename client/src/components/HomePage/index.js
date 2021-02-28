@@ -22,7 +22,15 @@ class HomePage extends React.Component{
                   this.props.history.push('/login')
               }
               else{
-  
+
+                // if(res.data.onlineState==2){
+                //    // home:1
+                //    this.props.history.push('/roomcreate')
+                // }
+                // if(res.data.onlineState==3){
+                //     // home:1
+                //     this.props.history.push('/gameplay')
+                //  }
               }
           })
         axios.get('/api/rooms/loadList').then(res=>{
@@ -67,32 +75,11 @@ class HomePage extends React.Component{
     //    console.log("User : "+this.state.userInfo)
     //    console.log("Room : "+this.roomInfo)
        axios.post('/api/rooms/joinRoom', {
-        _id:roomInfo._id,
-        userInfo:this.state.userInfo,
+        roomID:roomInfo._id,
+        userID:this.state.userInfo._id,
       }).then(res=>{
-
-
-        
-       // alert(JSON.stringify(res.data))
           if(res.data.success===true){
-              axios.post('/api/users/changeOnlineState',{
-                  _id:this.state.userInfo._id,
-                  onlineState:3,
-                  joinedRoomID:roomInfo._id,
-              }).then(res=>{
-                alert(JSON.stringify(res.data))
-                  if(res.data.success===true){
-
-                   setInterval(()=>{
-                    this.props.history.push("/gameplay")
-                   },10000)
-                    
-                    
-                  }
-              })
-          }
-          else{
-
+            this.props.history.push("/gameplay")
           }
       })
     }
@@ -108,7 +95,7 @@ class HomePage extends React.Component{
                 새로운 방 만들기
             </Button>
 
-        {this.state.roomList.map(item=>(item.isDeleted===false && item.isStart===false && <div className="roomCell"><Button key={item.id} onClick={this.roomCellOnClickHandler(item)} className="roomCell">{item.roomTitle}&nbsp;<span> ( 1 / 2 )</span></Button></div>))}
+        {this.state.roomList.map(item=>(item.isDeleted===false && item.isStart===false && <div className="roomCell"><Button key={item.id} onClick={this.roomCellOnClickHandler(item)} className="roomCell">{item.roomTitle}&nbsp;<span> ( {item.participantID===""?1:2} / 2 )</span></Button></div>))}
             </div>);
     }
 
