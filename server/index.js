@@ -12,7 +12,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 var timeLimitMap = new Map();
 var testArray = [];
-var gameIntervalTime = 10000;
+var gameIntervalTime = 15000;
 
 //사실 감춰야하는 사항
 const mongoURI = "mongodb+srv://hyeonsu:abcd1234@cluster0.tfva0.mongodb.net/Cluster0?retryWrites=true&w=majority"
@@ -81,6 +81,7 @@ app.post('/api/users/login', (req, res) => {
 })
 app.get('/api/users/auth', auth, (req, res) => {
   res.status(200).json({
+    isAuth:true,
     _id: req.user.id,
     email: req.user.email,
     nickname: req.user.nickname,
@@ -103,11 +104,6 @@ app.get('/api/users/logout', auth, (req, res) => {
 var num = 0;
 app.get('/api/axiostest', (req, res) => {
   app.io.emit("/socket/rooms/endTime", "server->client");
-  //   console.log(`start ${++num}`)
-  //   const tt=num;
-  //   setTimeout(()=>{console.log(`end ${tt}`)
-  // res.json({});
-  // },5000);
   res.json({ err: 1 });
 })
 app.post('/api/users/createRoom', (req, res) => {
@@ -132,14 +128,22 @@ app.post('/api/users/createRoom', (req, res) => {
 })
 app.post('/api/users/changeOnlineState', (req, res) => {
   //console.log(`_id ${req.body._id}`)
-  User.findByIdAndUpdate(
+  User.findById(
     req.body._id
-    , { onlineState: req.body.onlineState, joinedRoomID: req.body.joinedRoomID }, (err, user) => {
+    , (err, user) => {
       if (err) return res.json({ success: false, err })
-      res.status(200).json({
-        success: true,
-        ...user._doc,
+      user.onlineState=3;
+      user.joinedRoomID=req.body.joinedRoomID;
+      user.save((err,updatedUser)=>{
+        if(err) return res.json({success:false})
+        return res.json({
+          success: true,
+          ...updatedUser._doc,
+        })
       })
+        
+     
+      
     })
 })
 
@@ -187,19 +191,18 @@ app.post('/api/rooms/readygame', (req, res) => {
     if (err) return res.json({ success: false, message: "err" })
     if (room.isDeleted === true) return res.json({ success: false, message: "room deleted" })
     if (room.isStart === true) return res.json({ success: false, message: "already start" })
-    console.log(req.body.isReady);
     if (req.body.isReady === true) {
       room.isReady = false;
     }
     else {
       room.isReady = true;
     }
-    console.log(room.isReady)
+
     await room.save((err, updatedRoom) => {
       if (err) {
         return res.json({ success: false, message: "err" })
       }
-      console.log(updatedRoom._doc)
+  
       app.io.emit("/sToC/rooms/needToRefresh",);
       res.json({ success: true });
     })
@@ -267,24 +270,13 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
 
 
 })
-var test =new Map();
-test.set('1',2);
-test.set('1',3);
-test.forEach((value, key, map)=>{
-  console.log(value + " "+key)
-})
-
 //자기 턴이 지났는지 안지났는지 확인
 playAlert = setInterval(function () {
   timeLimitMap.forEach((value, key, map) => {
-    console.log(key+" "+value+" "+( new Date().getTime()))
     if (value.getTime() < new Date().getTime()) {
       Room.findById(key, (err, room) => {
         if (room.winner === 0) {
           room.winner = 3 - room.whoseTurn
-          if(room.winner==2){
-            console.log("T");
-          }
           app.io.emit("/sToC/rooms/needToRefresh",);
         }
         room.save((err, updatedRoom) => { });
@@ -442,13 +434,12 @@ app.post('/api/users/didTurn', (req, res) => {
 })
 
 app.post('/api/rooms/auth', (req, res) => {
-  console.log("req.body "+req.body);
   Room.findById(req.body._id, (err, roomInfo) => {
 
-    if (err) return res.json({ isAuth: false, })
-    else if(!roomInfo) return res.json({isAuth:false})
+    if (err)return res.json({ isAuth: false, message:req.body_id+" err"})
+    else if(!roomInfo) return res.json({isAuth:false, message:"can't find room"})
     else if (roomInfo.isDeleted === true) {
-      return res.json({ isAuth: false, ...roomInfo._doc })
+      return res.json({ isAuth: false, message:"deleted room"})
     }
     else {
       return res.json({ isAuth: true, ...roomInfo._doc})
@@ -482,7 +473,7 @@ app.post('/api/rooms/joinRoom', (req, res) => {
         room.save((err, updatedRoom) => {
           if (err) {
             
-            return res.json({ success: false });
+            return res.json({ success: false,message:"err" });
           }
           app.io.emit("/sToC/rooms/needToRefresh",);
           return res.json({ success: true })

@@ -29,11 +29,16 @@ class GamePlayPage extends React.Component {
                 this.props.history.push('/login')
             }
             else {
+                //erro
+                //resUser.data.joinedRoomID 가  "" 인게 왜 있어?
+                console.log("Json "+JSON.stringify(resUser.data))
                 axios.post('/api/rooms/auth', { _id: resUser.data.joinedRoomID }).then(resRoom => {
-                    console.log(resRoom.data)
+                    
+               //     alert("Room "+resRoom.data+" User "+resUser.data.joinedRoomID)
                     this.setState({ roomTitle: resRoom.data.roomTitle })
                     if (resRoom.data.isAuth === false) {
-                        this.props.history.push('/')
+                
+                            this.props.history.push('/')      
                     }
                     else {
                         this.setState({ roomInfo: resRoom.data }, () => {

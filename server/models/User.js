@@ -27,6 +27,7 @@ const userSchema = mongoose.Schema({
     },
     joinedRoomID:{
         type:String,
+        default:"",
     },
     token:{
         type:String,

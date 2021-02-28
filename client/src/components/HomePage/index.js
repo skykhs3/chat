@@ -60,20 +60,30 @@ class HomePage extends React.Component{
 
        // isDeleted:false,
        // participantID가 ""
-       console.log(this.state.userInfo)
+      
+       if(!roomInfo) return;
+     //  alert("User 2: "+JSON.stringify(this.state.userInfo)+"\n"+" Room : "+JSON.stringify(roomInfo))
        //Todo user의 참가한 방이 빈칸일 때만 방에 참가가 가능하게 하기.
+    //    console.log("User : "+this.state.userInfo)
+    //    console.log("Room : "+this.roomInfo)
        axios.post('/api/rooms/joinRoom', {
         _id:roomInfo._id,
         userInfo:this.state.userInfo,
       }).then(res=>{
-        console.log(res.data)
+
+
+        
+        
           if(res.data.success===true){
               axios.post('/api/users/changeOnlineState',{
                   _id:this.state.userInfo._id,
                   onlineState:3,
                   joinedRoomID:roomInfo._id,
               }).then(res=>{
+              //  alert(JSON.stringify(res.data))
                   if(res.data.success===true){
+
+                    ///?
                     this.props.history.push("/gameplay")
                     
                   }
