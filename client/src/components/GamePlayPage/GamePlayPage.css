@@ -15,3 +15,13 @@
     display: flex;
     text-align: center;
 }
+.te{
+ /*   border-radius: 10px; */
+    /* border : thick double gray; */
+    font-size: large;
+    font-weight: bold;
+}
+.alertMsg{
+    font-size: large;
+    font-weight: bold;
+}

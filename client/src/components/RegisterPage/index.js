@@ -79,7 +79,7 @@ class RegisterPage extends React.Component{
           nicknameHelperText:""
         })
       }
-      if(canPass==true){
+      if(canPass===true){
       axios.post('/api/users/register', {
         email: this.state.email,
         password: this.state.password,

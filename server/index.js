@@ -241,9 +241,7 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
           room.participantID = "";
           room.participantNickname = "";
         }
-        else {
-          room.isDeleted = true;
-        }
+    
         admin.joinedRoomID = "";
         admin.onlineState = 1;
       }
@@ -271,9 +269,7 @@ app.post('/api/rooms/exitGameRoom', (req, res) => {
         room.participantID = "";
         room.participantNickname = "";
         }
-        else{
-          room.isDeleted=true;
-        }
+        
         participant.joinedRoomID = "";
         participant.onlineState = 1;
         room.save((err,updatedRoom)=>{

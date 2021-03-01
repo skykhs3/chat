@@ -10,6 +10,7 @@ class HomePage extends React.Component {
         this.state = {
             roomList: [],
             userInfo: {},
+            isRoading:true,
         }
 
         //  axios.get('/api/axiostest').then(res=>console.log(res.data));
@@ -34,6 +35,7 @@ class HomePage extends React.Component {
             }
         })
         axios.get('/api/rooms/loadList').then(res => {
+            this.setState({isRoading:false});
             this.setState({ roomList: res.data.docs })
         })
     }
@@ -97,6 +99,7 @@ class HomePage extends React.Component {
                 </div>
                 <div className="rightBigBox">
                     방 목록
+                 <div>  {this.state.isRoading?"방 리스트 로딩중...":""} </div>
 {this.state.roomList.map(item => (item.isDeleted === false && item.isStart === false && <div className="roomCell"><Button key={item.id} onClick={this.roomCellOnClickHandler(item)} className="roomCell">{item.roomTitle}&nbsp;<span> ( {item.participantID === "" ? 1 : 2} / 2 )</span></Button></div>))}
                 </div>
             </div>
