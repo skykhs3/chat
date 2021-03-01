@@ -41,14 +41,19 @@ const roomSchema = mongoose.Schema({
         type:Number,
         default:0,
     },
+    whoFirst:{
+        type:Number,
+        default:1,
+    },
     gameHistory:{
         type:Array,
         'default':[]
     },
-    whoFirst:{
-        type:Number,
-        default:1,
+    ansHistory:{
+        type:Array,
+        'default':[]
     }
+    
 })
 const Room=mongoose.model('Room',roomSchema);
 module.exports={Room}

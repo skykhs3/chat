@@ -178,6 +178,24 @@ class GamePlayPage extends React.Component {
             }
             return (<div></div>)
         }
+        const renderTableCell=()=>{
+            var tempList=[];
+            for(var i=0;i<9;i++){
+                if(this.state.roomInfo.ansHistory!=null){
+                console.log(Object.values(this.state.roomInfo.ansHistory))
+                }
+                tempList.push(
+                <Button  color={(this.state.roomInfo.ansHistory!=null && Object.keys(this.state.roomInfo.ansHistory).length==3 && (Object.values(this.state.roomInfo.ansHistory)[0]===i || Object.values(this.state.roomInfo.ansHistory)[1]===i||Object.values(this.state.roomInfo.ansHistory)[2]===i))?'secondary':'default'} onClick={this.cellOnClickHanlder(i)} onMouseEnter={this.cellOnMouseEnterHadler(i)} onMouseLeave={this.cellOnMouseLeaveHandler(i)} name="0">
+                    
+                    <div className="ansCell">
+                    {OX[i] === 0 ? this.state.cellState[i] : (OX[i] === 1 ? 'O' : 'X')}
+                    </div>
+                    </Button>
+                
+                )
+            }
+            return tempList;
+        }
 
         var alertMsg = "게임 로딩중입니다. 잠시 기다려주세요";
         if (this.state.roomTitle == "") {
@@ -230,15 +248,7 @@ class GamePlayPage extends React.Component {
 
                     </div>
                     <div className="game_board">
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(0)} onMouseEnter={this.cellOnMouseEnterHadler(0)} onMouseLeave={this.cellOnMouseLeaveHandler(0)} name="0">{OX[0] === 0 ? this.state.cellState[0] : (OX[0] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(1)} onMouseEnter={this.cellOnMouseEnterHadler(1)} onMouseLeave={this.cellOnMouseLeaveHandler(1)} name="1">{OX[1] === 0 ? this.state.cellState[1] : (OX[1] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(2)} onMouseEnter={this.cellOnMouseEnterHadler(2)} onMouseLeave={this.cellOnMouseLeaveHandler(2)} name="2">{OX[2] === 0 ? this.state.cellState[2] : (OX[2] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(3)} onMouseEnter={this.cellOnMouseEnterHadler(3)} onMouseLeave={this.cellOnMouseLeaveHandler(3)} name="3">{OX[3] === 0 ? this.state.cellState[3] : (OX[3] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(4)} onMouseEnter={this.cellOnMouseEnterHadler(4)} onMouseLeave={this.cellOnMouseLeaveHandler(4)} name="4">{OX[4] === 0 ? this.state.cellState[4] : (OX[4] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(5)} onMouseEnter={this.cellOnMouseEnterHadler(5)} onMouseLeave={this.cellOnMouseLeaveHandler(5)} name="5">{OX[5] === 0 ? this.state.cellState[5] : (OX[5] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(6)} onMouseEnter={this.cellOnMouseEnterHadler(6)} onMouseLeave={this.cellOnMouseLeaveHandler(6)} name="6">{OX[6] === 0 ? this.state.cellState[6] : (OX[6] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(7)} onMouseEnter={this.cellOnMouseEnterHadler(7)} onMouseLeave={this.cellOnMouseLeaveHandler(7)} name="7">{OX[7] === 0 ? this.state.cellState[7] : (OX[7] === 1 ? 'O' : 'X')}</Button>
-                        <Button className="game_board_cell" onClick={this.cellOnClickHanlder(8)} onMouseEnter={this.cellOnMouseEnterHadler(8)} onMouseLeave={this.cellOnMouseLeaveHandler(8)} name="8">{OX[8] === 0 ? this.state.cellState[8] : (OX[8] === 1 ? 'O' : 'X')}</Button>
+                        {renderTableCell()}
                     </div>
                 </div>
             </div>

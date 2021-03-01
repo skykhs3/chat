@@ -6,7 +6,8 @@
     border: 2px solid black;
 }
 .game_board_cell{
-    border: 2px solid black;
+    /* border: 2px solid black;
+    display: block; */
 }
 .VS{
     margin: 20px;
@@ -19,6 +20,10 @@
  /*   border-radius: 10px; */
     /* border : thick double gray; */
     font-size: large;
+    font-weight: bold;
+}
+.ansCell{
+    font-size: 40px;
     font-weight: bold;
 }
 .alertMsg{

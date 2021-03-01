@@ -360,6 +360,7 @@ app.post('/api/users/didTurn', (req, res) => {
       }
 
 
+      ///가로 승리
       for (var i = 0; i <= 6; i += 3) {
         cntAdmin = 0;
         cntParticipant = 0;
@@ -372,15 +373,21 @@ app.post('/api/users/didTurn', (req, res) => {
           }
         }
         if (cntAdmin == 3) {
+          room.ansHistory.push(i)
+          room.ansHistory.push(i+1)
+          room.ansHistory.push(i+2)
           room.winner = 1;
         }
         if (cntParticipant == 3) {
+          room.ansHistory.push(i)
+          room.ansHistory.push(i+1)
+          room.ansHistory.push(i+2)
           room.winner = 2;
         }
       }
 
 
-
+//세로 승리
       for (var i = 0; i <= 2; i++) {
         cntAdmin = 0;
         cntParticipant = 0;
@@ -393,14 +400,21 @@ app.post('/api/users/didTurn', (req, res) => {
           }
         }
         if (cntAdmin == 3) {
+          room.ansHistory.push(i)
+          room.ansHistory.push(i+3)
+          room.ansHistory.push(i+6)
           room.winner = 1;
         }
         if (cntParticipant == 3) {
+          room.ansHistory.push(i)
+          room.ansHistory.push(i+3)
+          room.ansHistory.push(i+6)
           room.winner = 2;
         }
       }
 
-
+      
+//대각선 승리
       cntAdmin = 0;
       cntParticipant = 0;
       for (var j = 0; j <= 8; j += 4) {
@@ -413,12 +427,19 @@ app.post('/api/users/didTurn', (req, res) => {
       }
 
       if (cntAdmin == 3) {
+        room.ansHistory.push(0)
+        room.ansHistory.push(4)
+        room.ansHistory.push(8)
         room.winner = 1;
       }
       if (cntParticipant == 3) {
+        room.ansHistory.push(0)
+        room.ansHistory.push(4)
+        room.ansHistory.push(8)
         room.winner = 2;
       }
 
+      //대각선 승리
       cntAdmin = 0;
       cntParticipant = 0;
       for (var j = 2; j <= 6; j += 2) {
@@ -431,9 +452,15 @@ app.post('/api/users/didTurn', (req, res) => {
       }
 
       if (cntAdmin == 3) {
+        room.ansHistory.push(2)
+        room.ansHistory.push(4)
+        room.ansHistory.push(6)
         room.winner = 1;
       }
       if (cntParticipant == 3) {
+        room.ansHistory.push(2)
+        room.ansHistory.push(4)
+        room.ansHistory.push(6)
         room.winner = 2;
       }
       if (room.gameHistory.length === 9 && room.winner === 0) {
